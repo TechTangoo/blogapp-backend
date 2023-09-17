@@ -10,7 +10,7 @@ const validateToken = require('./../validatetoken');
 //access public
 router.route('/').get(async (req, res) => {
     const blogs = await Blog.find()
-    res.json({ status: 1, data: blogs });
+    res.status(200).json({ status: 1, data: blogs });
 })
 
 //@description get all blogs of that user
@@ -18,7 +18,7 @@ router.route('/').get(async (req, res) => {
 //access private
 router.route('/allblogs/:userid').get(validateToken, async (req, res) => {
     const blogs = await Blog.find({ "authorid": req.params.userid })
-    res.json({ status: 1, data: blogs });
+    res.status(200).json({ status: 1, data: blogs });
 })
 
 //@description get blog by id
@@ -27,8 +27,8 @@ router.route('/allblogs/:userid').get(validateToken, async (req, res) => {
 router.route('/:id').get(validateToken, async (req, res) => {
     const blogs = await Blog.findById(req.params.id);
     if (!blogs)
-        return (res.json({ status: 0, message: 'No Blog found' }))
-    res.json({ status: 1, data: blogs })
+        return (res.status(200).json({ status: 0, message: 'No Blog found' }))
+    res.status(200).json({ status: 1, data: blogs })
 })
 
 //@description get all blogs by category name
@@ -36,7 +36,7 @@ router.route('/:id').get(validateToken, async (req, res) => {
 //access public
 router.route('/category/:category').get(async (req, res) => {
     const blogs = await Blog.find({ 'categories': { $all: [req.params.category] } })
-    res.json({status: 1, data: blogs});
+    res.status(200).json({status: 1, data: blogs});
 })
 
 //@description get all comments related to that blog
@@ -45,8 +45,8 @@ router.route('/category/:category').get(async (req, res) => {
 router.route('/comment/:blogid').get(validateToken, async (req, res) => {
     const comments = await Comment.find({ 'blogid': req.params.blogid });
     if (!comments)
-        return (res.json({ status: 0, message: 'No Blog found' }))
-    res.json({status: 1, data: comments})
+        return (res.status(200).json({ status: 0, message: 'No Blog found' }))
+    res.status(200).json({status: 1, data: comments})
 })
 
 
@@ -59,7 +59,7 @@ router.route('/comment/:blogid').get(validateToken, async (req, res) => {
 router.route('/create').post(validateToken, async (req, res) => {
     const { title, description, categories, authorid, image } = req.body;
     if (!title || !description || !categories || !authorid || !image)
-        return (res.json({ status: 0, message: "All fields are required" }))
+        return (res.status(200).json({ status: 0, message: "All fields are required" }))
 
     const blogs = await Blog.create({
         title,
@@ -68,7 +68,7 @@ router.route('/create').post(validateToken, async (req, res) => {
         authorid,
         image
     })
-    res.json({status: 1, data: blogs})
+    res.status(200).json({status: 1, data: blogs})
 })
 
 //@description Create new comment for that blog
@@ -80,7 +80,7 @@ router.route('/comment/:blogid').post(validateToken, async (req, res) => {
     // console.log(blogs.id)
     const { name, description, img, email } = req.body;
     if (!name || !description || !img || !email)
-        return (res.json({ status: 0, message: "All fields are required" }))
+        return (res.status(200).json({ status: 0, message: "All fields are required" }))
 
     const comment = await Comment.create({
         name,
@@ -89,7 +89,7 @@ router.route('/comment/:blogid').post(validateToken, async (req, res) => {
         email,
         blogid: blogs.id
     })
-    res.json({status: 1, data: comment})
+    res.status(200).json({status: 1, data: comment})
 })
 
 
@@ -102,14 +102,14 @@ router.route('/comment/:blogid').post(validateToken, async (req, res) => {
 router.route('/:id').put(validateToken, async (req, res) => {
     const blogs = await Blog.findById(req.params.id);
     if (!blogs)
-        return (res.json({ status: 0, message: 'No blog found' }))
+        return (res.status(200).json({ status: 0, message: 'No blog found' }))
 
     const updated = await Blog.findByIdAndUpdate(
         req.params.id,
         req.body,
         { new: true }
     )
-    res.json({status: 1, data: updated})
+    res.status(200).json({status: 1, data: updated})
 })
 
 //@description Update comment by its id
@@ -118,7 +118,7 @@ router.route('/:id').put(validateToken, async (req, res) => {
 router.route('/comment/:id').put(validateToken, async (req, res) => {
     const comment = await Comment.findById(req.params.id);
     if (!comment)
-        return (res.json({ status: 0, message: 'No comment found' }))
+        return (res.status(200).json({ status: 0, message: 'No comment found' }))
 
     const updated = await Comment.findByIdAndUpdate(
         req.params.id,
@@ -130,7 +130,7 @@ router.route('/comment/:id').put(validateToken, async (req, res) => {
         status: 1,
         data: updated
     }
-    res.json({status: 1, data: response})
+    res.status(200).json({status: 1, data: response})
 })
 
 
@@ -143,10 +143,10 @@ router.route('/comment/:id').put(validateToken, async (req, res) => {
 router.route('/:id').delete(validateToken, async (req, res) => {
     const blog = await Blog.findById(req.params.id);
     if (!blog)
-        return (res.json({ status: 0, message: 'No Blog found' }))
+        return (res.status(200).json({ status: 0, message: 'No Blog found' }))
 
     await Blog.findByIdAndRemove(req.params.id);
-    res.json({ status: 1, message: "Successfully Removed" })
+    res.status(200).json({ status: 1, message: "Successfully Removed" })
 })
 
 //@description Delete Comment by ID
@@ -155,10 +155,10 @@ router.route('/:id').delete(validateToken, async (req, res) => {
 router.route('/comment/:id').delete(validateToken, async (req, res) => {
     const blog = await Comment.findById(req.params.id);
     if (!blog)
-        return (res.json({ status: 0, message: 'No Comment found' }))
+        return (res.status(200).json({ status: 0, message: 'No Comment found' }))
 
     await Comment.findByIdAndRemove(req.params.id);
-    res.json({ status: 1, message: "Successfully Removed" })
+    res.status(200).json({ status: 1, message: "Successfully Removed" })
 })
 
 
